@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Prontuários</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/carousel.css') }}">
+    <script src="{{ url_for('static', filename='js/color-modes.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery3.6.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment.js') }}"></script>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <style>
+        .fc-event-end .fc-event-time {
+            display: none;
+        }
+    </style>
+
+</head>
+
+
+<body data-bs-theme="dark">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category == 'error' %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% if category == 'success' %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+
+
+    
+    <div class="modal fade" id="prontuarioDetailsModal" tabindex="-1" aria-labelledby="prontuarioDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="prontuarioDetailsModalLabel">Detalhes do Prontuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="prontuarioDetailsContent">
+                        <!--Conteúdo do Modal será adicionado via JS-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addMaeModal" tabindex="-1" aria-labelledby="addMaeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMaeModalLabel">Cadastro de Mães</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/addMae">
+                        <div class="mb-3">
+                            <label for="cNomeMae" class="form-label">Nome da Mãe</label>
+                            <input type="text" class="form-control" id="cNomeMae" name="cNomeMae" required> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="cCPF" class="form-label">CPF</label>
+                            <input type="text" class="form-control" id="cCPF" name="cCPF" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dtNascimento" class="form-label">Data de Nascimento</label>
+                            <input type="date" class="form-control" id="dtNascimento" name="dtNascimento" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cEndereco" class="form-label">CEP</label>
+                            <input type="text" class="form-control mt-3" id="cEndereco" name="cEndereco" required
+                                autocomplete="off">
+                        </div>
+                        <button type="button" id="btnConsultarCEP" class="btn btn-primary">Validar CEP</button>
+                        <div id="enderecoCep"></div>
+                        <div class="mb-3">
+                            <label for="cNumero" class="form-label">Número</label>
+                            <input type="text" class="form-control" id="cNumero" name="cNumero"
+                                required autocomplete="off">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cEmail" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="cEmail" name="cEmail" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cadastrar Mãe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addCriancaModal" tabindex="-1" aria-labelledby="addCriancaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCriancaModalLabel">Cadastro de Crianças</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/addCrianca">
+                        <div class="mb-3">
+                            <label for="cNomeCrianca" class="form-label">Nome da Criança</label>
+                            <input type="text" class="form-control" id="cNomeCrianca" name="cNomeCrianca" required> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="dtNascimento" class="form-label">Data de Nascimento</label>
+                            <input type="date" class="form-control" id="dtNascimento" name="dtNascimento" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nCdMae" class="form-label">Mãe da Criança</label>
+                            <select type="select" class="form-control" id="nCdMae" name="nCdMae" required autocomplete="off">
+                                {% for maeCadastrada in maesCadastradas %}
+                                    <option value="{{ maeCadastrada[0] }}">{{ maeCadastrada[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Cadastrar Criança</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addProntuarioModal" tabindex="-1" aria-labelledby="addProntuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProntuarioModalLabel">Lançamento de Prontuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/addProntuario">
+                        <div class="mb-3">
+                            <label for="nCdCrianca" class="form-label">Criança</label>
+                            <select type="select" class="form-control" id="nCdCrianca" name="nCdCrianca" required autocomplete="off">
+                                {% for criancaCadastrada in criancasCadastradas %}
+                                    <option value="{{ criancaCadastrada[0] }}">{{ criancaCadastrada[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="nPeso" class="form-label">Peso</label>
+                            <input type="text" class="form-control" id="nPeso" name="nPeso" required> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="nAltura" class="form-label">Altura</label>
+                            <input type="text" class="form-control" id="nAltura" name="nAltura" required> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="nPressao" class="form-label">Pressão</label>
+                            <input type="text" class="form-control" id="nPressao" name="nPressao" required> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="nTemperatura" class="form-label">Temperatura</label>
+                            <input type="text" class="form-control" id="nTemperatura" name="nTemperatura" required> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="dtProntuario" class="form-label">Data do Prontuário</label>
+                            <input type="date" class="form-control" id="dtProntuario" name="dtProntuario">
+                        </div>
+                        <div class="mb-3">
+                            <label for="cObservacao" class="form-label">Observações</label>
+                            <textarea class="form-control" id="cObservacao" name="cObservacao" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Incluir Prontuário</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand"><img src="{{ url_for('static', filename='img/favicon.png') }}" width="25"
+                    height="25" alt="Logo do site"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <button class="btn btn-outline-primary mr-2" type="button" data-bs-toggle="modal"
+                            data-bs-target="#addMaeModal" style="margin-right: 5px;">Cadastrar Mãe</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-primary mr-2" type="button" data-bs-toggle="modal"
+                            data-bs-target="#addCriancaModal" style="margin-right: 5px;">Cadastrar Criança</button>
+                    </li>
+                </ul>
+                <a class="btn btn-outline-danger" href="{{ url_for('logout') }}" type="submit">Sair</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Bem vindo(a) {{ user[0][1] }}</h2>
+                </div>
+            </div>
+            <br><br>
+            <p>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Mães Cadastradas</h2>
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Data de Nascimento</th>
+                                <th scope="col">E-mail</th>
+                                <th scope="col">E-mail para Contato</th>
+                                <th scope="col">Médico Responsável</th>
+                                <th scope="col">Especialidade</th>
+                                <th scope="col">Editar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for maeCadastrada in maesCadastradas %}
+                        <tr>
+                            <td>{{ maeCadastrada[1] }}</td>
+                            <td>{{ maeCadastrada[2] }}</td>
+                            <td>{{ maeCadastrada[3] }}</td>
+                            <td>{{ maeCadastrada[4] }}</td>
+                            <td>{{ maeCadastrada[5] }}</td>
+                            <td>{{ maeCadastrada[6] }}</td>
+                            <td><a href="{{ url_for('editarCadastroMae', nCdMae=maeCadastrada[0]) }}" class="btn btn-outline-warning">Editar</a></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </p>
+            <p>
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Crianças Cadastradas</h2>
+                    <table class="table">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Nome da Mãe</th>
+                                <th scope="col">Nascimento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for criancaCadastrada in criancasCadastradas %}
+                        <tr>
+                            <td>{{ criancaCadastrada[1] }}</td>
+                            <td>{{ criancaCadastrada[3] }}</td>
+                            <td>{{ criancaCadastrada[2] }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </p>
+            </div>
+            <div class="container mt-5">
+                <h2>Prontuários</h2>
+                <div id="calendar"></div>
+            </div>
+    </main>
+    
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/fullcalendar.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var descricaoTarefas = {};
+
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                select: function (info) {
+                    var selectedDate = info.startStr;
+                    document.getElementById('dtProntuario').value = selectedDate;
+                    var addProntuarioModal = new bootstrap.Modal(document.getElementById('addProntuarioModal'));
+                    addProntuarioModal.show();
+                },
+                events: [
+                    {% for prontuario in prontuariosCadastrados %}
+                {
+                    id: "{{ prontuario[0] }}",
+                    title: "{{ prontuario[11]|e }}", // Escapar caracteres especiais
+                    start: "{{ prontuario[6] }}",
+                    allDay: false,
+                },
+            {% endfor %}
+            
+            ],
+            eventClick: function (info) {
+                // Captura os detalhes do evento
+                var eventId = info.event.id;
+                var eventStart = moment(info.event.start).format("DD/MM/YYYY");
+                // Acesse a descrição da tarefa usando o objeto de mapeamento
+                var prontuarioNomeCrianca = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioHorario = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioPeso = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioAltura = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioPressao = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioTemperatura = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioObservacao = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioNascimento = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioFuncionario = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                var prontuarioEspecialidade = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+
+
+                // Atualiza o conteúdo do modal com as informações do evento
+                var prontuarioDetailsContent = document.getElementById('prontuarioDetailsContent');
+                prontuarioDetailsContent.innerHTML = `
+                    <h4><span id="prontuarioNomeCrianca" name="prontuarioNomeCrianca">${prontuarioNomeCrianca}</span></h4>
+                    <div><p>Data e Horário do Prontuário: ${eventStart} - <span id="prontuarioHorario" name="prontuarioHorario">${prontuarioHorario}</span></p>
+                    <p>Data do Nascimento: <span id="prontuarioNascimento" name="prontuarioNascimento">${prontuarioNascimento}</span></p>
+                    <p>Enfermeiro: <span id="prontuarioFuncionario" name="prontuarioFuncionario">${prontuarioFuncionario}</span></p>
+                    <p>Altura: <span id="prontuarioAltura" name="prontuarioAltura">${prontuarioAltura}</span></p>
+                    <p>Peso: <span id="prontuarioPeso" name="prontuarioPeso">${prontuarioPeso}</span></p>
+                    <p>Pressão: <span id="prontuarioPressao" name="prontuarioPressao">${prontuarioPressao}</span></p>
+                    <p>Temperatura: <span id="prontuarioTemperatura" name="prontuarioTemperatura">${prontuarioTemperatura}</span></p>
+                    <p>Observações: <span id="prontuarioObservacao" name="prontuarioObservacao">${prontuarioObservacao}</span></p>
+                `;
+
+                carregarDetalhesProntuario(eventId);
+
+                var prontuarioDetailsModal = new bootstrap.Modal(document.getElementById('prontuarioDetailsModal'));
+                prontuarioDetailsModal.show();
+            }
+        });
+
+        calendar.render();
+    });
+    </script>
+
+    <script>
+        function carregarDetalhesProntuario(idTarefa) {
+            $.ajax({
+                url: `/buscar_detalhes_tarefa?id=${idTarefa}`,
+                method: 'GET',
+                success: function (data) {
+                    $('#prontuarioNomeCrianca').text(data.prontuarioNomeCrianca);
+                    $('#prontuarioHorario').text(data.prontuarioHorario);
+                    $('#prontuarioPeso').text(data.prontuarioPeso);
+                    $('#prontuarioAltura').text(data.prontuarioAltura);
+                    $('#prontuarioPressao').text(data.prontuarioPressao);
+                    $('#prontuarioTemperatura').text(data.prontuarioTemperatura);
+                    $('#prontuarioObservacao').text(data.prontuarioObservacao);
+                    $('#prontuarioNascimento').text(data.prontuarioNascimento);
+                    $('#prontuarioFuncionario').text(data.prontuarioFuncionario);
+                    $('#prontuarioEspecialidade').text(data.prontuarioEspecialidade);
+                    $('#prontuarioDetailsModal').modal('show');
+                },
+                error: function (error) {
+                    console.error(error);
+                    // Lidar com erros, se necessário
+                }
+            });
+        }
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#btnConsultarCEP').click(function () {
+                var cep = $('#cEndereco').val();
+                $.get('https://viacep.com.br/ws/' + cep + '/json/', function (data) {
+                    if (data.erro) {
+                        $('#enderecoCep').html('<p>CEP não encontrado</p>');
+                    } else {
+                        var endereco = 'Endereço: ' + data.logradouro + ', ' + data.bairro + ', ' + data.localidade + '/' + data.uf;
+                        $('#enderecoCep').html('<p>' + endereco + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

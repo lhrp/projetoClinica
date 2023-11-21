@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Editar Cadastro da Mãe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/carousel.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <script src="{{ url_for('static', filename='js/color-modes.js') }}"></script>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #btnSalvar {
+            margin-top: 20px;
+        }
+
+        #enderecoCep {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body data-bs-theme="dark">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/profile">
+                    <img src="{{ url_for('static', filename='img/favicon.png') }}" width="25" height="25" alt="Logo do site">
+                </a>
+            </div>
+        </nav>
+    <div class="container mt-5">
+        <h2>Editar Cadastro da Mãe</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if category == 'error' %}
+        <div class="alert alert-danger">
+          {{ message }}
+        </div>
+        {% endif %}
+        {% if category == 'success' %}
+        <div class="alert alert-success">
+          {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/salvarCadastroMae">
+            <input type="text" hidden id="nCdMae" name="nCdMae" value="{{ nCdMae }}">
+            <div class="mb-3">
+                <label for="cNomeMae" class="form-label">Nome da Mãe</label>
+                <input type="text" class="form-control" id="cNomeMae" name="cNomeMae" value="{{ dadosBase[0][1] }}" required autocomplete="off" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="cCPF" class="form-label">CPF</label>
+                <input type="text" class="form-control" id="cCPF" name="cCPF" value="{{ dadosBase[0][2] }}"  required autocomplete="off" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="dtNascimento" class="form-label">Data de Nascimento</label>
+                <input type="date" class="form-control" id="dtNascimento" name="dtNascimento" value="{{ dadosBase[0][3] }}" required autocomplete="off" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="cEndereco" class="form-label">CEP</label>
+                <input type="text" class="form-control mt-3" id="cEndereco" name="cEndereco" value="{{ dadosBase[0][4] }}" required autocomplete="off">
+            </div>
+            <button type="button" id="btnConsultarCEP" class="btn btn-primary">Validar CEP</button>
+            <div id="enderecoCep"></div>
+            <div class="mb-3">
+                <label for="cNumero" class="form-label">Número</label>
+                <input type="text" class="form-control" id="cNumero" name="cNumero" value="{{ dadosBase[0][5] }}" required autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label for="cEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="cEmail" name="cEmail" value="{{ dadosBase[0][6] }}" required autocomplete="off">
+            </div>
+            <div class="mb-3">
+                <label for="cEmailContato" class="form-label">Contato Adicional</label>
+                <input type="email" class="form-control" id="cEmailContato" name="cEmailContato" value="{{ dadosAux[0][2] }}" required autocomplete="off">
+            </div>
+            
+            <div class="mb-3">
+                <label for="nCdFuncionario" class="form-label">Médico Responsável</label>
+                <select type="select" class="form-control" id="nCdFuncionario" name="nCdFuncionario" required autocomplete="off">
+                    {% for funcionario in funcionariosCadastrados %}
+                        <option value="{{ funcionario[0] }}" selected="{{ dadosAux[0][1] }}">{{ funcionario[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3 d-flex justify-content-center">
+                <button id="btnSalvar" type="submit" class="btn btn-primary me-2" style="width: 48%; height: 45%;">Salvar</button>
+            </div>
+        </form>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#btnConsultarCEP').click(function () {
+                var cep = $('#cEndereco').val();
+                $.get('https://viacep.com.br/ws/' + cep + '/json/', function (data) {
+                    if (data.erro) {
+                        $('#enderecoCep').html('<p>CEP não encontrado</p>');
+                    } else {
+                        var endereco = 'Endereço: ' + data.logradouro + ', ' + data.bairro + ', ' + data.localidade + '/' + data.uf;
+                        $('#enderecoCep').html('<p>' + endereco + '</p>');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

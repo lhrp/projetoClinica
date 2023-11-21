@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/carousel.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Cadastro de Funcionários</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <script src="{{ url_for('static', filename='js/color-modes.js') }}"></script>
+</head>
+
+<body data-bs-theme="dark">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="{{ url_for('static', filename='img/favicon.png') }}" width="25" height="25"
+                    alt="Logo do site">
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container mt-5">
+            <h2>Cadastro de Funcionários</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            {% if category == 'error' %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+            {% endif %}
+            {% if category == 'success' %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="/cadastrar">
+                <div class="mb-3">
+                    <label for="cNomeFuncionario" class="form-label">Nome do Funcionário</label>
+                    <input type="text" class="form-control" id="cNomeFuncionario" name="cNomeFuncionario" required autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="cEmail" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="cEmail" name="cEmail" required autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="cEspecialidade" class="form-label">Especialidade</label>
+                    <input type="text" class="form-control" id="cEspecialidade" name="cEspecialidade" required autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="cLogin" class="form-label">Login</label>
+                    <input type="text" class="form-control" id="cLogin" name="cLogin" required autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="cSenha" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="cSenha" name="cSenha" required autocomplete="off">
+                </div>
+                <div class="mb-3">
+                    <label for="cConfirmarSenha" class="form-label">Confirmar Senha</label>
+                    <input type="password" class="form-control" id="cConfirmarSenha" name="cConfirmarSenha" required
+                        autocomplete="off">
+                </div>
+                <div class="mb-3 d-flex justify-content-between">
+                    <button id="btnSalvar" type="submit" class="btn btn-primary"
+                        style="width: 48%; height: 38px;">Cadastrar</button>
+                    <button type="button" id="btnCancelar" class="btn btn-secondary"
+                        style="width: 48%; height: 38px;">Voltar</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+
+        $(document).ready(function () {
+            $('#btnCancelar').click(function () {
+                window.location.href = '/';
+            });
+
+        });
+    </script>
+</body>
+
+</html>
