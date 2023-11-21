@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-Br" data-bs-theme="dark">
+<html lang="pt-Br">
 
 <head>
   <script src="{{ url_for('static', filename='js/color-modes.js') }}"></script>
@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-in.css') }}">
 </head>
 
-<body class="d-flex align-items-center py-4 bg-body-tertiary">
+<body class="d-flex align-items-center py-4 bg-body-tertiary"  data-bs-theme="light">
   <main class="form-signin w-100 m-auto">
 
     <form method="POST" action="/login">
