@@ -14,9 +14,7 @@
             display: none;
         }
     </style>
-
 </head>
-
 
 <body data-bs-theme="light">
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -36,9 +34,6 @@
     {% endif %}
     {% endwith %}
 
-
-
-    
     <div class="modal fade" id="prontuarioDetailsModal" tabindex="-1" aria-labelledby="prontuarioDetailsModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
@@ -67,31 +62,30 @@
                     <form method="POST" action="/addMae">
                         <div class="mb-3">
                             <label for="cNomeMae" class="form-label">Nome da Mãe</label>
-                            <input type="text" class="form-control" id="cNomeMae" name="cNomeMae" required> 
+                            <input type="text" class="form-control" id="cNomeMae" name="cNomeMae" required autocomplete="off"> 
                         </div>
                         <div class="mb-3">
                             <label for="cCPF" class="form-label">CPF</label>
-                            <input type="text" class="form-control" id="cCPF" name="cCPF" required>
+                            <input type="text" class="form-control" id="cCPF" name="cCPF" maxlength="11" required autocomplete="off">
                         </div>
                         <div class="mb-3">
                             <label for="dtNascimento" class="form-label">Data de Nascimento</label>
-                            <input type="date" class="form-control" id="dtNascimento" name="dtNascimento" required>
+                            <input type="date" class="form-control" id="dtNascimento" name="dtNascimento" required autocomplete="off">
                         </div>
                         <div class="mb-3">
                             <label for="cEndereco" class="form-label">CEP</label>
-                            <input type="text" class="form-control mt-3" id="cEndereco" name="cEndereco" required
+                            <input type="text" class="form-control mt-3" id="cEndereco" name="cEndereco" required autocomplete="off"
                                 autocomplete="off">
                         </div>
                         <button type="button" id="btnConsultarCEP" class="btn btn-primary">Validar CEP</button>
                         <div id="enderecoCep"></div>
                         <div class="mb-3">
                             <label for="cNumero" class="form-label">Número</label>
-                            <input type="text" class="form-control" id="cNumero" name="cNumero"
-                                required autocomplete="off">
+                            <input type="text" class="form-control" id="cNumero" name="cNumero" required autocomplete="off">
                         </div>
                         <div class="mb-3">
                             <label for="cEmail" class="form-label">E-mail</label>
-                            <input type="email" class="form-control" id="cEmail" name="cEmail" required>
+                            <input type="email" class="form-control" id="cEmail" name="cEmail" required autocomplete="off">
                         </div>
                         <button type="submit" class="btn btn-primary">Cadastrar Mãe</button>
                     </form>
@@ -111,11 +105,11 @@
                     <form method="POST" action="/addCrianca">
                         <div class="mb-3">
                             <label for="cNomeCrianca" class="form-label">Nome da Criança</label>
-                            <input type="text" class="form-control" id="cNomeCrianca" name="cNomeCrianca" required> 
+                            <input type="text" class="form-control" id="cNomeCrianca" name="cNomeCrianca" required autocomplete="off"> 
                         </div>
                         <div class="mb-3">
                             <label for="dtNascimento" class="form-label">Data de Nascimento</label>
-                            <input type="date" class="form-control" id="dtNascimento" name="dtNascimento" required>
+                            <input type="date" class="form-control" id="dtNascimento" name="dtNascimento" required autocomplete="off">
                         </div>
                         <div class="mb-3">
                             <label for="nCdMae" class="form-label">Mãe da Criança</label>
@@ -141,38 +135,43 @@
                 </div>
                 <div class="modal-body">
                     <form method="POST" action="/addProntuario">
+                       
                         <div class="mb-3">
-                            <label for="nCdCrianca" class="form-label">Criança</label>
-                            <select type="select" class="form-control" id="nCdCrianca" name="nCdCrianca" required autocomplete="off">
-                                {% for criancaCadastrada in criancasCadastradas %}
-                                    <option value="{{ criancaCadastrada[0] }}">{{ criancaCadastrada[1] }}</option>
-                                {% endfor %}
-                            </select>
+                            <label for="nCdCodigoCrianca" class="form-label">Código da Criança</label>
+                            <input type="text" class="form-control" id="nCdCodigoCrianca" name="nCdCodigoCrianca" required autocomplete="off">
                         </div>
                         
+                        <button type="button" class="btn btn-primary" id="btnBuscarCrianca">Buscar Criança</button>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="nCdCrianca" name="nCdCrianca" readonly hidden>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cNomeCriancaProntuario" class="form-label">Nome da Criança</label>
+                            <input type="text" class="form-control" id="cNomeCriancaProntuario" name="cNomeCriancaProntuario" readonly required autocomplete="off">
+                        </div>
                         <div class="mb-3">
                             <label for="nPeso" class="form-label">Peso</label>
-                            <input type="text" class="form-control" id="nPeso" name="nPeso" required> 
+                            <input type="text" class="form-control" id="nPeso" name="nPeso" required autocomplete="off"> 
                         </div>
                         <div class="mb-3">
                             <label for="nAltura" class="form-label">Altura</label>
-                            <input type="text" class="form-control" id="nAltura" name="nAltura" required> 
+                            <input type="text" class="form-control" id="nAltura" name="nAltura" required autocomplete="off"> 
                         </div>
                         <div class="mb-3">
                             <label for="nPressao" class="form-label">Pressão</label>
-                            <input type="text" class="form-control" id="nPressao" name="nPressao" required> 
+                            <input type="text" class="form-control" id="nPressao" name="nPressao" required autocomplete="off"> 
                         </div>
                         <div class="mb-3">
                             <label for="nTemperatura" class="form-label">Temperatura</label>
-                            <input type="text" class="form-control" id="nTemperatura" name="nTemperatura" required> 
+                            <input type="text" class="form-control" id="nTemperatura" name="nTemperatura" required autocomplete="off"> 
                         </div>
                         <div class="mb-3">
                             <label for="dtProntuario" class="form-label">Data do Prontuário</label>
-                            <input type="date" class="form-control" id="dtProntuario" name="dtProntuario">
+                            <input type="date" class="form-control" id="dtProntuario" name="dtProntuario" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="cObservacao" class="form-label">Observações</label>
-                            <textarea class="form-control" id="cObservacao" name="cObservacao" rows="3" required></textarea>
+                            <textarea class="form-control" id="cObservacao" name="cObservacao" rows="3" required autocomplete="off"></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Incluir Prontuário</button>
                     </form>
@@ -256,6 +255,8 @@
                                 <th scope="col">Nome</th>
                                 <th scope="col">Nome da Mãe</th>
                                 <th scope="col">Nascimento</th>
+                                <th scope="col">Código da Criança</th>
+                                <th scope="col">QR Code</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -264,6 +265,10 @@
                             <td>{{ criancaCadastrada[1] }}</td>
                             <td>{{ criancaCadastrada[3] }}</td>
                             <td>{{ criancaCadastrada[2] }}</td>
+                            <td>{{ criancaCadastrada[4] }}</td>
+                            <td>
+                                <button class="btn btn-primary" onclick="gerarQRCode('{{ criancaCadastrada[4] }}')">Gerar</button>
+                            </td>
                         </tr>
                         {% endfor %}
                         </tbody>
@@ -276,10 +281,28 @@
                 <h2>Prontuários</h2>
                 <div id="calendar"></div>
             </div>
+
+            <div class="modal fade" id="qrcode-modal" tabindex="-1" aria-labelledby="qrcode-modal-label" aria-hidden="true">
+                <div class="modal-dialog d-flex justify-content-center align-items-center">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="qrcode-modal-label">QR Code</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div id="qrcode-container"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
     </main>
     
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/fullcalendar.js') }}"></script>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var descricaoTarefas = {};
@@ -296,61 +319,59 @@
                 },
                 events: [
                     {% for prontuario in prontuariosCadastrados %}
-                {
-                    id: "{{ prontuario[0] }}",
-                    title: "{{ prontuario[11]|e }}", // Escapar caracteres especiais
-                    start: "{{ prontuario[6] }}",
-                    allDay: false,
-                },
-            {% endfor %}
+                        {
+                            id: "{{ prontuario[0] }}",
+                            title: "{{ prontuario[14] + ' - ' + prontuario[11]|e}}", // Escapar caracteres especiais
+                            start: "{{ prontuario[6] }}",
+                            allDay: false,
+                        },
+                    {% endfor %}
             
-            ],
-            eventClick: function (info) {
-                // Captura os detalhes do evento
-                var eventId = info.event.id;
-                var eventStart = moment(info.event.start).format("DD/MM/YYYY");
-                // Acesse a descrição da tarefa usando o objeto de mapeamento
-                var prontuarioNomeCrianca = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioHorario = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioPeso = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioAltura = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioPressao = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioTemperatura = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioObservacao = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioNascimento = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioFuncionario = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
-                var prontuarioEspecialidade = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                ],
+                eventClick: function (info) {
+                    var eventId = info.event.id;
+                    var eventStart = moment(info.event.start).format("DD/MM/YYYY");
+                    var prontuarioNomeCrianca = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioHorario = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioPeso = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioAltura = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioPressao = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioTemperatura = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioObservacao = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioNascimento = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioFuncionario = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
+                    var prontuarioEspecialidade = descricaoTarefas[eventId] || "Carregando dados do Prontuário...";
 
+                    var prontuarioDetailsContent = document.getElementById('prontuarioDetailsContent');
 
-                // Atualiza o conteúdo do modal com as informações do evento
-                var prontuarioDetailsContent = document.getElementById('prontuarioDetailsContent');
-                prontuarioDetailsContent.innerHTML = `
-                    <h4><span id="prontuarioNomeCrianca" name="prontuarioNomeCrianca">${prontuarioNomeCrianca}</span></h4>
-                    <div><p>Data e Horário do Prontuário: ${eventStart} - <span id="prontuarioHorario" name="prontuarioHorario">${prontuarioHorario}</span></p>
-                    <p>Data do Nascimento: <span id="prontuarioNascimento" name="prontuarioNascimento">${prontuarioNascimento}</span></p>
-                    <p>Enfermeiro: <span id="prontuarioFuncionario" name="prontuarioFuncionario">${prontuarioFuncionario}</span></p>
-                    <p>Altura: <span id="prontuarioAltura" name="prontuarioAltura">${prontuarioAltura}</span></p>
-                    <p>Peso: <span id="prontuarioPeso" name="prontuarioPeso">${prontuarioPeso}</span></p>
-                    <p>Pressão: <span id="prontuarioPressao" name="prontuarioPressao">${prontuarioPressao}</span></p>
-                    <p>Temperatura: <span id="prontuarioTemperatura" name="prontuarioTemperatura">${prontuarioTemperatura}</span></p>
-                    <p>Observações: <span id="prontuarioObservacao" name="prontuarioObservacao">${prontuarioObservacao}</span></p>
-                `;
+                    prontuarioDetailsContent.innerHTML = `
+                        <h4><span id="prontuarioNomeCrianca" name="prontuarioNomeCrianca">${prontuarioNomeCrianca}</span></h4>
+                        <div><p>Data e Horário do Prontuário: ${eventStart} - <span id="prontuarioHorario" name="prontuarioHorario">${prontuarioHorario}</span></p>
+                        <p>Data do Nascimento: <span id="prontuarioNascimento" name="prontuarioNascimento">${prontuarioNascimento}</span></p>
+                        <p>Enfermeiro: <span id="prontuarioFuncionario" name="prontuarioFuncionario">${prontuarioFuncionario}</span></p>
+                        <p>Peso: <span id="prontuarioPeso" name="prontuarioPeso">${prontuarioPeso}</span></p>
+                        <p>Altura: <span id="prontuarioAltura" name="prontuarioAltura">${prontuarioAltura}</span></p>
+                        <p>Pressão: <span id="prontuarioPressao" name="prontuarioPressao">${prontuarioPressao}</span></p>
+                        <p>Temperatura: <span id="prontuarioTemperatura" name="prontuarioTemperatura">${prontuarioTemperatura}</span></p>
+                        <p>Observações: <span id="prontuarioObservacao" name="prontuarioObservacao">${prontuarioObservacao}</span></p>
+                        `;
 
-                carregarDetalhesProntuario(eventId);
+                    carregarDetalhesProntuario(eventId);
 
-                var prontuarioDetailsModal = new bootstrap.Modal(document.getElementById('prontuarioDetailsModal'));
-                prontuarioDetailsModal.show();
-            }
+                    var prontuarioDetailsModal = new bootstrap.Modal(document.getElementById('prontuarioDetailsModal'));
+                    prontuarioDetailsModal.show();
+                }
+            });
+
+            calendar.render();
+            
         });
-
-        calendar.render();
-    });
     </script>
 
     <script>
         function carregarDetalhesProntuario(idTarefa) {
             $.ajax({
-                url: `/buscar_detalhes_tarefa?id=${idTarefa}`,
+                url: `/buscasDetalhesProntuario?id=${idTarefa}`,
                 method: 'GET',
                 success: function (data) {
                     $('#prontuarioNomeCrianca').text(data.prontuarioNomeCrianca);
@@ -389,6 +410,52 @@
             });
         });
     </script>
+
+<script>
+    function buscarCrianca() {
+        var nCdCodigoCrianca = document.getElementById('nCdCodigoCrianca').value;
+        buscarNomeCrianca(nCdCodigoCrianca);
+    }
+
+    function buscarNomeCriancaAutomaticamente() {
+        var nCdCodigoCrianca = document.getElementById('nCdCodigoCrianca').value;
+        buscarNomeCrianca(nCdCodigoCrianca);
+    }
+
+    function buscarNomeCrianca(nCdCodigoCrianca) {
+
+        fetch('/buscarNomeCrianca/' + nCdCodigoCrianca)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('cNomeCriancaProntuario').value = data.cNomeCrianca;
+                    document.getElementById('nCdCrianca').value = data.nCdCrianca;
+                } else {
+                    alert('Criança não encontrada. Verifique o código.');
+                    document.getElementById('cNomeCriancaProntuario').value = '';
+                    document.getElementById('nCdCrianca').value = '';
+                }
+            })
+            .catch(error => console.error('Erro:', error));
+    }
+
+    document.getElementById('btnBuscarCrianca').addEventListener('click', buscarCrianca);
+    document.getElementById('nCdCodigoCrianca').addEventListener('blur', buscarNomeCriancaAutomaticamente);
+</script>
+
+<script>
+    function gerarQRCode(codigoCrianca) {
+        document.getElementById('qrcode-container').innerHTML = '';
+
+        var qrcode = new QRCode("qrcode-container", {
+            text: codigoCrianca,
+            width: 128,
+            height: 128
+        });
+
+        $('#qrcode-modal').modal('show');
+    }
+</script>
 
 </body>
 

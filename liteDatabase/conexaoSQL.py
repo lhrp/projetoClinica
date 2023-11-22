@@ -1,4 +1,4 @@
-import sqlite3, bcrypt, os
+import sqlite3, bcrypt, os, random, string
 from datetime import datetime
 
 # Caminho do arquivo .db
@@ -52,6 +52,7 @@ def criar_tabelas():
             cNomeCrianca TEXT NOT NULL,
             dtNascimento DATE,
             nCdMae INTEGER,
+            nCdCodigoCrianca TEXT NOT NULL,
             FOREIGN KEY (nCdMae) REFERENCES tbMae (nCdMae)
         )
     ''')
@@ -86,7 +87,6 @@ def cadastrarFuncionario(cNomeFuncionario, cEspecialidade, cEmail, cLogin, cSenh
     try:
         cursor.execute("INSERT INTO tbFuncionario (cNomeFuncionario, cEspecialidade, cEmail, cLogin, cSenha) VALUES (?, ?, ?, ?, ?)", (cNomeFuncionario, cEspecialidade, cEmail, cLogin, cSenha.decode('utf-8')))
         conn.commit()
-        print("Médico cadastrado com sucesso!")
     except:
         pass
 
@@ -95,7 +95,12 @@ def cadastrarFuncionario(cNomeFuncionario, cEspecialidade, cEmail, cLogin, cSenh
 def validaLoginFuncionario(cLoginEmail):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT nCdFuncionario, cLogin, cEmail, cSenha FROM tbFuncionario WHERE (cLogin = '{cLoginEmail}' OR cEmail = '{cLoginEmail}')")
+    cursor.execute(f"""SELECT nCdFuncionario
+                            , cLogin
+                            , cEmail
+                            , cSenha 
+                         FROM tbFuncionario
+                        WHERE (cLogin = '{cLoginEmail}' OR cEmail = '{cLoginEmail}')""")
     user = cursor.fetchone()
     if user == None:
         conn.close()
@@ -110,7 +115,7 @@ def listarFuncionarios():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM tbFuncionario")
+    cursor.execute("SELECT * FROM tbFuncionario WHERE cEspecialidade <> 'Administrador'")
     funcionarios = cursor.fetchall()
     conn.close()
 
@@ -135,7 +140,6 @@ def cadastrarMae(cNomeMae, cCPF, dtNascimento, cEndereco, cNumero, cEmail):
     try:
         cursor.execute("INSERT INTO tbMae (cNomeMae, cCPF, dtNascimento, cEndereco, cNumero, cEmail) VALUES (?, ?, ?, ?, ?, ?)", (cNomeMae, cCPF, dtNascimento, cEndereco, cNumero, cEmail))
         conn.commit()
-        print("Mãe cadastrada com sucesso!")
     except:
         pass
 
@@ -146,9 +150,12 @@ def atualizarMae(nCdMae, cEndereco, cNumero, cEmail):
     cursor = conn.cursor()
 
     try:
-        cursor.execute(f"UPDATE tbMae SET cEndereco = {cEndereco}, cNumero = {cNumero}, cEmail = '{cEmail}' WHERE nCdMae = {nCdMae}")
+        cursor.execute(f"""UPDATE tbMae  
+                            SET cEndereco = {cEndereco}
+                              , cNumero = {cNumero}
+                              , cEmail = '{cEmail}' 
+                          WHERE nCdMae = {nCdMae}""")
         conn.commit()
-        print("Dados atualizados com sucesso!")
     except:
         pass
 
@@ -183,7 +190,6 @@ def cadastrarMaeAux(nCdMae, nCdFuncionario, cEmailContato):
     try:
         cursor.execute("INSERT INTO tbMaeAux (nCdMae, nCdFuncionario, cEmailContato) VALUES (?, ?, ?)", (nCdMae, nCdFuncionario, cEmailContato))
         conn.commit()
-        print("Dados atualizados com sucesso!")
     except:
         pass
 
@@ -197,7 +203,6 @@ def cadastrarMaeAuxBase(nCdMae):
     try:
         cursor.execute("INSERT INTO tbMaeAux (nCdMae) VALUES (?)", (nCdMae))
         conn.commit()
-        print("Dados atualizados com sucesso!")
     except:
         pass
 
@@ -211,7 +216,6 @@ def atualizarMaeAux(nCdMae, nCdFuncionario, cEmailContato):
     try:
         cursor.execute(f"UPDATE tbMaeAux SET nCdFuncionario = {nCdFuncionario}, cEmailContato = '{cEmailContato}' WHERE nCdMae = {nCdMae}")
         conn.commit()
-        print("Dados atualizados com sucesso!")
     except:
         pass
 
@@ -220,7 +224,6 @@ def atualizarMaeAux(nCdMae, nCdFuncionario, cEmailContato):
 # Função para listar todos os dados auxiliares das mães
 def listarMaesAuxi(nCdMae):
 
-    print(nCdMae)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
@@ -250,16 +253,19 @@ def listarMaesAux():
 
     return dadosMaes
 
+def gerarCodigoCrianca():
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(6))
+
 # Função para cadastrar uma criança
 def cadastrarCrianca(cNomeCrianca, dtNascimento, nCdMae):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     try:
-        cursor.execute("INSERT INTO tbCrianca (cNomeCrianca, dtNascimento, nCdMae) VALUES (?, ?, ?)",
-                       (cNomeCrianca, dtNascimento, nCdMae))
+        cursor.execute("INSERT INTO tbCrianca (cNomeCrianca, dtNascimento, nCdMae, nCdCodigoCrianca) VALUES (?, ?, ?, ?)",
+                       (cNomeCrianca, dtNascimento, nCdMae, gerarCodigoCrianca()))
         conn.commit()
-        print("Criança cadastrada com sucesso!")
     except:
         pass
 
@@ -270,7 +276,17 @@ def listarCriancas():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT nCdCrianca, cNomeCrianca, strftime('%d/%m/%Y', tbCrianca.dtNascimento) as dtNascimento, cNomeMae FROM tbCrianca INNER JOIN tbMae ON tbMae.nCdMae = tbCrianca.nCdMae")
+    cursor.execute("SELECT nCdCrianca, cNomeCrianca, strftime('%d/%m/%Y', tbCrianca.dtNascimento) as dtNascimento, cNomeMae, nCdCodigoCrianca FROM tbCrianca INNER JOIN tbMae ON tbMae.nCdMae = tbCrianca.nCdMae")
+    criancas = cursor.fetchall()
+    conn.close()
+
+    return criancas
+
+def buscarCriancaCodigoGerado(nCdCodigoCrianca):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute(f"SELECT nCdCrianca, cNomeCrianca FROM tbCrianca WHERE nCdCodigoCrianca = '{nCdCodigoCrianca}'")
     criancas = cursor.fetchall()
     conn.close()
 
@@ -297,8 +313,8 @@ def listarCriancasAux():
     cursor = conn.cursor()
 
     cursor.execute("""SELECT *
-  FROM tbProntuario
- INNER JOIN tbCrianca ON tbCrianca.nCdCrianca = tbProntuario.nCdCrianca""")
+                        FROM tbProntuario
+                       INNER JOIN tbCrianca ON tbCrianca.nCdCrianca = tbProntuario.nCdCrianca""")
     criancas = cursor.fetchall()
     conn.close()
 
@@ -331,7 +347,8 @@ def listarProntuario(nCdProntuario):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    cursor.execute(f"""SELECT *, strftime('%d/%m/%Y', tbCrianca.dtNascimento) as dtNascimento
+    cursor.execute(f"""SELECT *
+                            , strftime('%d/%m/%Y', tbCrianca.dtNascimento) as dtNascimento
                          FROM tbProntuario
                    INNER JOIN tbCrianca ON tbCrianca.nCdCrianca = tbProntuario.nCdCrianca
                    INNER JOIN tbFuncionario ON tbFuncionario.nCdFuncionario = tbProntuario.nCdFuncionario
@@ -341,44 +358,5 @@ def listarProntuario(nCdProntuario):
 
     return criancas
 
-# Verificar e criar as tabelas no banco de dados (executar apenas uma vez)
 if not os.path.exists(DB_PATH):
     criar_tabelas()
-
-# # Exemplos de cadastro e listagem
-# cadastrarFuncionario("João XYZ", "Pediatra", "joao@gmail.com", "joao", "joao")
-# cadastrarFuncionario("Maria XYZ", "Neonatologista", "maria@gmail.com", "maria", "maria")
-# cadastrarFuncionario("Leonardo Henrique Rangon Paulino", "Administrador", "leonardo@lhrp.com.br", "lhrp", "359513")
-
-# cadastrarMae("Ana", "12345678910", "1998-10-15", "Rua A, 123", 123, "ana@gmail.com")
-# cadastrarMae("Clara", "12345678910", "1996-08-07", "Rua B, 456", 123, "clara@gmail.com")
-
-# cadastrarMaeAux(1, 2, "irmao@gmail.com")
-# cadastrarMaeAux(2, 1, "primo@gmail.com")
-
-# cadastrarCrianca("Pedro", "2023-01-15", 1)
-# cadastrarCrianca("Julia", "2023-11-15", 2)
-
-# cadastrarCriancaAux(1, 3.2, 0.5, 9.15, 27.3)
-# cadastrarCriancaAux(2, 3.5, 0.52, 10.15, 28.3)
-
-# print("\nFuncionários:")
-#print(listarFuncionarios())
-
-# print("\nMães:")
-# print(listarMaes())
-
-# print("\nMãesAux:")
-# print(listarMaesAux())
-
-# print("\nCrianças:")
-# print(listarCriancas())
-
-# print("\nCriançasAux:")
-# print(listarCriancasAux())
-
-
-#print(validaLoginFuncionario("maria", "maria"))
-
-
-#atualizarMaeAux(3, 2, 'teste@gmail')

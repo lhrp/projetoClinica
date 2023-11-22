@@ -2,4 +2,4 @@ python -m venv venv
 
 python -m pip install --upgrade pip wheel
 
-pip install Flask Flask-Mail Flask-MySQL PyMySQL python-dotenv qrcode requests telebot uuid bcrypt
+pip install Flask Flask-Mail Flask-MySQL python-dotenv qrcode requests bcrypt

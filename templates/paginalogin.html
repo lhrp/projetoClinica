@@ -11,14 +11,11 @@
 
   <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/sign-in/">
 
-
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
 
   <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
 
-  <!-- Custom styles for this template -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-in.css') }}">
 </head>
 
@@ -52,16 +49,19 @@
           title="Informar login ou e-mail" name="cLoginEmail" autofocus>
         <label for="loginInput">Login ou E-mail</label>
       </div>
+      
       <div class="form-floating">
         <input type="password" class="form-control" id="cSenha" placeholder="Senha" title="Informe sua senha"
           name="cSenha">
         <label for="floatingPassword">Senha</label>
       </div>
 
-
       <button class="btn btn-primary w-100 py-2" type="submit">Entrar</button>
+
     </form>
+
   </main>
+
   <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
 
 </body>

@@ -1,11 +1,6 @@
-import os
-import random
-from flask import Flask, render_template, request, redirect, url_for, session, send_from_directory, flash, jsonify, get_flashed_messages
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, get_flashed_messages
 from flask_mail import Mail, Message
-import pymysql, uuid
-import string, requests, json, time, telebot, string, random
-from requests import Request, Session
-from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+import string, random, os
 from liteDatabase.conexaoSQL import *
 
 from dotenv import load_dotenv, find_dotenv
@@ -119,7 +114,7 @@ def editarCadastroMae(nCdMae):
 def salvarCadastroMae():
     if 'logged_in' in session and session['logged_in']:
         user_id = session['user_id']
-        user = dadosFuncionarioLogado(user_id)  # Recupere as informações do usuário
+        user = dadosFuncionarioLogado(user_id)
         nCdMae = request.form['nCdMae']
         cNomeMae = request.form['cNomeMae']
         cEndereco = request.form['cEndereco']
@@ -306,26 +301,39 @@ def enviarEmailProntuario(nCdCrianca, nPeso, nAltura, nPressao, nTemperatura, dt
     '''
     mail.send(msg)
 
-@app.route('/buscar_detalhes_tarefa', methods=['GET'])
-def buscar_detalhes_tarefa():
+@app.route('/buscarNomeCrianca/<nCdCodigoCrianca>', methods=['GET'])
+def buscarNomeCrianca(nCdCodigoCrianca):
+
+    
+    try:
+        nCdCrianca = buscarCriancaCodigoGerado(nCdCodigoCrianca)[0][0]
+        cNomeCrianca = buscarCriancaCodigoGerado(nCdCodigoCrianca)[0][1]
+    except:
+        cNomeCrianca = ''
+
+    if cNomeCrianca:
+        return jsonify({'success': True, 'nCdCrianca': nCdCrianca, 'cNomeCrianca': cNomeCrianca})
+    else:
+        return jsonify({'success': False}), 404
+
+@app.route('/buscasDetalhesProntuario', methods=['GET'])
+def buscasDetalhesProntuario():
     idProntuario = request.args.get('id')
     user_id = session['user_id']
     
     prontuarios = listarProntuario(idProntuario)
 
-    print(prontuarios[0][11])
-
     detalhes_tarefa = {
-        'prontuarioNomeCrianca': prontuarios[0][11],
+        'prontuarioNomeCrianca': prontuarios[0][14] + ' - ' + prontuarios[0][11],
         'prontuarioPeso': prontuarios[0][2],
         'prontuarioAltura': prontuarios[0][3],
         'prontuarioPressao': prontuarios[0][4],
         'prontuarioTemperatura': prontuarios[0][5],
         'prontuarioHorario': prontuarios[0][7],
         'prontuarioObservacao': prontuarios[0][9],
-        'prontuarioNascimento': prontuarios[0][20],
-        'prontuarioFuncionario': prontuarios[0][15],
-        'prontuarioEspecialidade': prontuarios[0][16],
+        'prontuarioNascimento': prontuarios[0][21],
+        'prontuarioFuncionario': prontuarios[0][16],
+        'prontuarioEspecialidade': prontuarios[0][17],
     }
 
     return jsonify(detalhes_tarefa)
