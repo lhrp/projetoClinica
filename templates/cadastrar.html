@@ -9,9 +9,7 @@
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <script src="{{ url_for('static', filename='js/color-modes.js') }}"></script>
 </head>
-
 <body data-bs-theme="light">
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
@@ -20,7 +18,6 @@
             </a>
         </div>
     </nav>
-
     <main>
         <div class="container mt-5">
             <h2>Cadastro de Funcionários</h2>
@@ -63,8 +60,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="cConfirmarSenha" class="form-label">Confirmar Senha</label>
-                    <input type="password" class="form-control" id="cConfirmarSenha" name="cConfirmarSenha" required
-                        autocomplete="off">
+                    <input type="password" class="form-control" id="cConfirmarSenha" name="cConfirmarSenha" required autocomplete="off">
                 </div>
                 <div class="mb-3 d-flex justify-content-between">
                     <button id="btnSalvar" type="submit" class="btn btn-primary"
@@ -75,10 +71,8 @@
             </form>
         </div>
     </main>
-
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script>
-
         $(document).ready(function () {
             $('#btnCancelar').click(function () {
                 window.location.href = '/';
@@ -87,5 +81,4 @@
         });
     </script>
 </body>
-
 </html>

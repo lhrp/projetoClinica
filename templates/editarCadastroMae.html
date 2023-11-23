@@ -23,9 +23,7 @@
         }
     </style>
 </head>
-
 <body data-bs-theme="light">
-        <!-- Navbar -->
         <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/prontuario">
@@ -82,14 +80,15 @@
             </div>
             <div class="mb-3">
                 <label for="cEmailContato" class="form-label">Contato Adicional</label>
-                <input type="email" class="form-control" id="cEmailContato" name="cEmailContato" value="{{ dadosAux[0][2] }}" required autocomplete="off">
+                <input type="text" class="form-control" id="cEmailContato" name="cEmailContato" value="{{ dadosAux[0][2] }}" required autocomplete="off">
             </div>
             
             <div class="mb-3">
                 <label for="nCdFuncionario" class="form-label">Médico Responsável</label>
                 <select type="select" class="form-control" id="nCdFuncionario" name="nCdFuncionario" required autocomplete="off">
+                        <option value="0">Selecione uma opção</option>
                     {% for funcionario in funcionariosCadastrados %}
-                        <option value="{{ funcionario[0] }}" selected="{{ dadosAux[0][1] }}">{{ funcionario[1] }}</option>
+                        <option value="{{ funcionario[0] }}">{{ funcionario[1] + ' - ' + funcionario[2] }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -115,8 +114,20 @@
                     }
                 });
             });
+    
+            $('#btnSalvar').click(function () {
+                var selectedValue = $('#nCdFuncionario').val();
+    
+                if (selectedValue === "0") {
+                    alert("Por favor, selecione uma opção válida para o Médico Responsável.");
+                    return false;
+                }
+    
+                return true;
+            });
         });
     </script>
+    
 </body>
 
 </html>
