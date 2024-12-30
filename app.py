@@ -8,7 +8,7 @@ load_dotenv(find_dotenv())
 
 app = Flask(__name__)
 
-app.secret_key = '3bd418cf57b84a82a7609a15e6ae99b5d63509e7270d85a02e77f034157ed12847b2086e2ce02cd58f4137d8f35b814ea55479b6325df94fad24df91bf7bcbb7'
+app.secret_key = '??????'
 
 def generate_short_code():
     characters = string.ascii_letters + string.digits
